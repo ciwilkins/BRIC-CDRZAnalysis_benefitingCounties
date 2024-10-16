@@ -4,7 +4,7 @@
 # 2. Use CDRZ dataset to find out county names and make a list,
 # 3. Use a function to search for names on the list
 ################################################################################
-# BRIC with CDRZ in Footprint...be mindful that it may take FEMA a while to update their status column to know who was actually accepted
+# BRIC with CDRZ in Footprint...be mindful that it may take FEMA a while to update their 'status' column to know who has actually accepted
 ################################################################################
 rm(list = ls())
 
@@ -13,7 +13,6 @@ library(dplyr)
 
 # Load the datasets
 hma_data <- read.csv("C:/Users/chwilkins/Documents/CDRZ/climate-and-communities-main/CDRZ/HmaSubapplications.1.csv")
-cdrz_data <- read.csv("C:/Users/chwilkins/Documents/CDRZ/climate-and-communities-main/CDRZ/CDRZ_Characteristics.csv")
 
 # Define the states of interest
 states_of_interest <- c("AL", "FL", "GA", "MS", "NC", "SC", "TX")
