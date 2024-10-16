@@ -1,0 +1,153 @@
+################################################################################
+# Updated script to:
+# 1. Filter for the states in the footprint,
+# 2. Use CDRZ dataset to find out county names and make a list,
+# 3. Use a function to search for names on the list
+################################################################################
+# BRIC with CDRZ in Footprint...be mindful that it may take FEMA a while to update their status column to know who was actually accepted
+################################################################################
+rm(list = ls())
+
+# Load the necessary libraries
+library(dplyr)
+
+# Load the datasets
+hma_data <- read.csv("C:/Users/chwilkins/Documents/CDRZ/climate-and-communities-main/CDRZ/HmaSubapplications.1.csv")
+cdrz_data <- read.csv("C:/Users/chwilkins/Documents/CDRZ/climate-and-communities-main/CDRZ/CDRZ_Characteristics.csv")
+
+# Define the states of interest
+states_of_interest <- c("AL", "FL", "GA", "MS", "NC", "SC", "TX")
+
+# Filter the data for those states, BRIC awards, and for the year 2023
+filtered_bric_data <- hma_data %>%
+  filter(program == "Building Resilient Infrastructure and Communities" &
+           fiscalYear == 2023 &
+           subapplicantStateAbbreviation %in% states_of_interest)
+
+# Define the list of counties to search for
+counties_of_interest <- c("BALDWIN COUNTY", "ESCAMBIA COUNTY", "MOBILE COUNTY",
+                          "BAY COUNTY", "BREVARD COUNTY", "BROWARD COUNTY", 
+                          "CHARLOTTE COUNTY", "COLLIER COUNTY", "DESOTO COUNTY",
+                          "HENDRY COUNTY", "HILLSBOROUGH COUNTY", "INDIAN RIVER  
+                          COUNTY", "MARTIN COUNTY", "MIAMI-DADE COUNTY", "PALM 
+                          BEACH COUNTY", "PINELLAS COUNTY", "ST. LUCIE COUNTY", 
+                          "WASHINGTON COUNTY", "BULLOCH COUNTY", "CHATHAM COUNTY", 
+                          "LIBERTY COUNTY", "MCINTOSH COUNTY", "SEMINOLE COUNTY",
+                          "WAYNE COUNTY", "GEORGE COUNTY", "HARRISON COUNTY", 
+                          "MARION COUNTY", "STONE COUNTY", "TUNICA COUNTY", 
+                          "BEAUFORT COUNTY", "CARTERET COUNTY", "CRAVEN COUNTY", 
+                          "DARE COUNTY", "HYDE COUNTY", "NEW HANOVER COUNTY", 
+                          "ONSLOW COUNTY", "SAMPSON COUNTY", "TYRRELL COUNTY", 
+                          "WASHINGTON COUNTY", "BEAUFORT COUNTY", "BERKELEY COUNTY", 
+                          "CHARLESTON COUNTY", "DORCHESTER COUNTY", "HORRY COUNTY", 
+                          "BRAZORIA COUNTY", "CHILDRESS COUNTY", "FLOYD COUNTY", 
+                          "GALVESTON COUNTY", "GONZALES COUNTY", "HARRIS COUNTY", 
+                          "HAYS COUNTY", "JEFFERSON COUNTY", "NACOGDOCHES COUNTY", 
+                          "ORANGE COUNTY", "PARMER COUNTY")
+
+# Filter the BRIC data for counties that are in the list of interest (exact match)
+filtered_bric_data_counties <- filtered_bric_data %>%
+  filter(benefitingCounties %in% counties_of_interest)
+
+# Calculate the proportion of entries in each category of the status column
+proportion_status <- filtered_bric_data_counties %>%
+  group_by(status) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# Calculate the proportion of entries in each category of the selectionStatus column
+proportion_selection_status <- filtered_bric_data_counties %>%
+  group_by(selectionStatus) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# View the results
+proportion_status
+
+proportion_selection_status
+
+# Calculate the proportion of entries grouped by both selectionStatus and selectionFundingCategory///do for status too
+proportion_selection_breakdown <- filtered_bric_data %>%
+  group_by(selectionStatus, selectionFundingCategory) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# View the result
+proportion_selection_breakdown
+
+################################################################################
+# National BRIC Analysis
+################################################################################
+
+# Filter the data for BRIC awards and for the year 2023
+filtered_bric_data_national <- hma_data %>%
+  filter(program == "Building Resilient Infrastructure and Communities" &
+           fiscalYear == 2023)
+
+# Calculate the proportion of entries in each category of the status column
+proportion_status_national <- filtered_bric_data_national %>%
+  group_by(status) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# Calculate the proportion of entries in each category of the selectionStatus column
+proportion_selection_status_national <- filtered_bric_data_national %>%
+  group_by(selectionStatus) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# View the result for status at the national level
+print(proportion_status_national)
+
+# View the result for selectionStatus at the national level
+print(proportion_selection_status_national)
+
+# Calculate the proportion of entries grouped by both selectionStatus and selectionFundingCategory///do for status
+proportion_selection_breakdown_national <- filtered_bric_data_national %>%
+  group_by(selectionStatus, selectionFundingCategory) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# View the result for selectionStatus and selectionFundingCategory at the national level
+print(proportion_selection_breakdown_national)
+
+################################################################################
+# BRIC Awards in states where Geos and SBP work
+################################################################################
+# Filter the data for those states, BRIC awards, and for the year 2023
+filtered_bric_data <- hma_data %>%
+  filter(program == "Building Resilient Infrastructure and Communities" &
+           fiscalYear == 2023 &
+           subapplicantStateAbbreviation %in% states_of_interest)
+
+# Calculate the proportion of entries in each category of the status column
+proportion_status_GEOSSBP <- filtered_bric_data %>%
+  group_by(status) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# Calculate the proportion of entries in each category of the selectionStatus column
+proportion_selection_status_GEOSSBP <- filtered_bric_data %>%
+  group_by(selectionStatus) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# View the results
+proportion_status_GEOSSBP
+
+proportion_selection_status_GEOSSBP
+
+# Calculate the proportion of entries grouped by both selectionStatus and selectionFundingCategory///do for status too
+proportion_selection_breakdown_GEOSSBP <- filtered_bric_data %>%
+  group_by(selectionStatus, selectionFundingCategory) %>%
+  summarise(count = n()) %>%
+  mutate(proportion = count / sum(count))
+
+# View the result
+proportion_selection_breakdown_GEOSSBP
+
+
+
+
+
+
