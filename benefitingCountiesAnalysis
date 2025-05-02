@@ -10,6 +10,7 @@ rm(list = ls())
 
 # Load the necessary libraries
 library(dplyr)
+library(stringr)
 
 # Load the datasets
 hma_data <- read.csv("C:/Users/chwilkins/Documents/CDRZ/climate-and-communities-main/CDRZ/HmaSubapplications.1.csv")
@@ -44,9 +45,12 @@ counties_of_interest <- c("BALDWIN COUNTY", "ESCAMBIA COUNTY", "MOBILE COUNTY",
                           "HAYS COUNTY", "JEFFERSON COUNTY", "NACOGDOCHES COUNTY", 
                           "ORANGE COUNTY", "PARMER COUNTY")
 
-# Filter the BRIC data for counties that are in the list of interest (exact match)
+# Create a regex pattern to match any of the counties of interest as full words
+county_pattern <- paste0("\\b(", paste(counties_of_interest, collapse = "|"), ")\\b")
+
+# Use str_detect to search for any county in the comma-separated benefitingCounties field
 filtered_bric_data_counties <- filtered_bric_data %>%
-  filter(benefitingCounties %in% counties_of_interest)
+  filter(str_detect(benefitingCounties, regex(county_pattern, ignore_case = TRUE)))
 
 # Calculate the proportion of entries in each category of the status column
 proportion_status <- filtered_bric_data_counties %>%
